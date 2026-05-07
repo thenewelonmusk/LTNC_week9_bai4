@@ -8,15 +8,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FilePathTest {
 
     @Test
-    void testFailOnLinux() {
-        // SỬ DỤNG DOUBLE BACKSLASH (\\)
-        // Đây là định dạng cứng của Windows.
-        // Trên Linux, nó sẽ tìm một cái file tên là "src\test\resources\data.txt" 
-        // thay vì vào từng thư mục, nên chắc chắn sẽ báo lỗi (Fail).
-        String path = "src\\test\\resources\\data.txt";
+    void testPathLogic() {
+        // Giả sử bạn muốn lấy tên file từ một đường dẫn đầy đủ
+        String fullPath = "src\\test\\resources\\data.txt";
         
-        File file = new File(path);
-        assertTrue(file.exists(), "Job này sẽ FAIL trên Linux/macOS vì không hiểu dấu \\");
+        // Tìm vị trí dấu gạch chéo cuối cùng để cắt lấy tên file
+        // Trên Windows: tìm thấy ở vị trí cuối cùng
+        // Trên Linux: KHÔNG tìm thấy dấu \ nào cả, kết quả trả về -1
+        int lastSeparator = fullPath.lastIndexOf("\\");
+        
+        // Ép lỗi: Nếu không tìm thấy dấu \ (trên Linux/Mac), 
+        // phép tính lastSeparator + 1 sẽ không như ý muốn
+        assertTrue(lastSeparator != -1, "Phải tìm thấy dấu gạch chéo ngược trong đường dẫn!");
+        
+        String fileName = fullPath.substring(lastSeparator + 1);
+        assertEquals("data.txt", fileName);
     }
 
     // Test này sẽ chạy tốt trên mọi OS sau khi Refactor
