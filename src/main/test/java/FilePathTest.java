@@ -8,21 +8,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class FilePathTest {
 
     @Test
-    void testPathLogic() {
-        // Giả sử bạn muốn lấy tên file từ một đường dẫn đầy đủ
-        String fullPath = "src\\test\\resources\\data.txt";
+    void testFailOnLinuxDueToCaseAndSeparator() {
+        // 1. Ép lỗi dấu gạch chéo ngược: 
+        // Trên Linux, dấu này không phải là phân tách thư mục, nó sẽ tìm file tên là "src\test..."
+        String windowsPath = "src\\test\\resources\\data.txt";
+        File file = new File(windowsPath);
         
-        // Tìm vị trí dấu gạch chéo cuối cùng để cắt lấy tên file
-        // Trên Windows: tìm thấy ở vị trí cuối cùng
-        // Trên Linux: KHÔNG tìm thấy dấu \ nào cả, kết quả trả về -1
-        int lastSeparator = fullPath.lastIndexOf("\\");
-        
-        // Ép lỗi: Nếu không tìm thấy dấu \ (trên Linux/Mac), 
-        // phép tính lastSeparator + 1 sẽ không như ý muốn
-        assertTrue(lastSeparator != -1, "Phải tìm thấy dấu gạch chéo ngược trong đường dẫn!");
-        
-        String fileName = fullPath.substring(lastSeparator + 1);
-        assertEquals("data.txt", fileName);
+        // 2. Ép lỗi Case Sensitivity: 
+        // Giả sử file thật là 'data.txt', ta gọi 'DATA.TXT'
+        // Windows: Pass | Linux: Fail
+        File caseFile = new File("src/test/resources/DATA.TXT");
+
+        assertAll("Bẫy lỗi hệ điều hành",
+            () -> assertTrue(file.exists(), "Chắc chắn Fail trên Linux vì dùng dấu \\"),
+            () -> assertTrue(caseFile.exists(), "Chắc chắn Fail trên Linux vì DATA.TXT khác data.txt")
+        );
     }
 
     // Test này sẽ chạy tốt trên mọi OS sau khi Refactor
