@@ -1,16 +1,20 @@
+import org.junit.jupiter.api.Test;
+import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class FilePathTest {
-
     @Test
-    void testSeparatorLogic() {
-        // Chúng ta ép logic: "Đường dẫn phải chứa dấu gạch chéo ngược"
-        String path = "src\\test\\resources\\data.txt";
+    void testForceFailOnNonWindows() {
+        // Lấy tên hệ điều hành
+        String os = System.getProperty("os.name").toLowerCase();
         
-        // Lệnh này sẽ trả về dấu phân tách của OS đang chạy
-        // Windows: \  |  Linux/Mac: /
-        String currentOSSeparator = File.separator;
-
-        // Test này CHẮC CHẮN FAIL trên Ubuntu và macOS 
-        // vì File.separator của chúng là "/" chứ không phải "\"
-        assertEquals("\\", currentOSSeparator, "Lỗi: OS này không sử dụng dấu gạch chéo ngược!");
+        // Nếu không phải windows, ta ép nó Fail bằng cách check một điều kiện vô lý
+        if (!os.contains("win")) {
+            // Trên Linux/Mac, lệnh này sẽ văng lỗi ngay lập tức
+            throw new RuntimeException("OS này là " + os + ". Matrix đang hoạt động!");
+        }
+        
+        // Trên Windows thì vẫn cho Pass
+        assertTrue(true);
     }
 }
