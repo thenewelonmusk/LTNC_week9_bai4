@@ -4,17 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilePathTest {
     @Test
-    void testForceFailOnNonWindows() {
-        // Lấy tên hệ điều hành
-        String os = System.getProperty("os.name").toLowerCase();
+    void testWindowsPath() {
+        // Ép buộc dùng dấu \ của Windows
+        String path = "src\\test\\resources\\data.txt";
+        File file = new File(path);
         
-        // Nếu không phải windows, ta ép nó Fail bằng cách check một điều kiện vô lý
-        if (!os.contains("win")) {
-            // Trên Linux/Mac, lệnh này sẽ văng lỗi ngay lập tức
-            throw new RuntimeException("OS này là " + os + ". Matrix đang hoạt động!");
-        }
-        
-        // Trên Windows thì vẫn cho Pass
-        assertTrue(true);
+        // Trên Windows: Hệ điều hành tự hiểu và trả về True
+        // Trên Ubuntu/macOS: Hệ thống tìm file tên là "src\test\resources\data.txt" (coi \ là ký tự thường) -> False
+        assertTrue(file.exists(), "Lỗi: Không tìm thấy file trên hệ điều hành này!");
     }
 }
